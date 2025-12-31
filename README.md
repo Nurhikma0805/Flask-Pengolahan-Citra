@@ -6,6 +6,7 @@ Aplikasi web sederhana untuk memproses gambar dengan berbagai filter menggunakan
 
 ### Halaman Login
 ![Login](screenshots/login.png)
+<img width="327" height="398" alt="image" src="https://github.com/user-attachments/assets/10ec6ba1-6a5c-441e-9b50-e6b83c3e185a" />
 
 ### Halaman Pengolahan
 ![alt text](<cara-ternak-ayam-broiler-2-1152x813 (1).jpg>)
@@ -29,5 +30,6 @@ Buka di browser: `http://127.0.0.1:5000`
 Flask, Pillow, SQLite3
 
 ---
+
 
 **Author:** Nurhikma | [@Nurhikma0805](https://github.com/Nurhikma0805)
