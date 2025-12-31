@@ -5,13 +5,13 @@ Aplikasi web sederhana untuk memproses gambar dengan berbagai filter menggunakan
 ## 📸 Tampilan
 
 ### Halaman Login
-![Login](screenshots/login.png)
-<img width="327" height="398" alt="image" src="https://github.com/user-attachments/assets/10ec6ba1-6a5c-441e-9b50-e6b83c3e185a" />
+<img width="1919" height="1079" alt="login" src="https://github.com/user-attachments/assets/382e3186-d406-4dd3-b5ba-edd22404fb3a" />
 
 ### Halaman Pengolahan
-![alt text](<cara-ternak-ayam-broiler-2-1152x813 (1).jpg>)
-## ✨ Fitur
+<img width="1919" height="1079" alt="processing" src="https://github.com/user-attachments/assets/dc27b1bf-9ee5-4a89-b882-ba8340b2a0e6" />
 
+
+## ✨ Fitur
 8 filter gambar: Grayscale, Blur, Sharpen, Edge Detection, Brightness, Contrast, Sepia, dan Negative.
 
 ## 🚀 Cara Pakai
@@ -33,3 +33,4 @@ Flask, Pillow, SQLite3
 
 
 **Author:** Nurhikma | [@Nurhikma0805](https://github.com/Nurhikma0805)
+
