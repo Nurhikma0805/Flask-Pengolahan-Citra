@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Pengolahan Citra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .user-info {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    
+    .processing-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .upload-box, .result-box {
+        border: 2px dashed #D2C1B6;
+        padding: 30px;
+        border-radius: 8px;
+        text-align: center;
+    }
+    
+    .image-preview {
+        max-width: 100%;
+        max-height: 300px;
+        margin: 20px 0;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+    }
+    
+    .filter-options {
+        margin: 20px 0;
+    }
+    
+    .filter-options label {
+        display: block;
+        margin-bottom: 10px;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .filter-options select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #D2C1B6;
+        border-radius: 5px;
+        font-size: 1em;
+        margin-bottom: 15px;
+    }
+    
+    .error-msg {
+        color: red;
+        margin-top: 10px;
+    }
+    
+    .success-msg {
+        color: green;
+        margin-top: 10px;
+    }
+
+    /* Flash message styles */
+    .flash-messages {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 400px;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        font-weight: 500;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .close-btn {
+        float: right;
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: inherit;
+        padding: 0;
+        margin-left: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .processing-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .flash-messages {
+            left: 20px;
+            right: 20px;
+            max-width: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+          <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="nav">
+    <a href="{{ url_for('results') }}">Lihat Hasil</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</div>
+
+<div class="user-info">
+    <strong>Pengguna:</strong> {{ username }}
+</div>
+
+<h1>Pengolahan Citra</h1>
+
+<div class="processing-grid">
+    <div class="upload-box">
+        <h2>Upload Gambar</h2>
+        <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*" required>
+            <button type="submit" class="btn">Upload</button>
+        </form>
+        
+        {% if session.get('uploaded_image') %}
+        <h3>Gambar Asli:</h3>
+        <img src="{{ url_for('uploaded_file', filename=session.uploaded_image) }}" 
+             class="image-preview" 
+             alt="Gambar Asli"
+             onerror="this.onerror=null; this.src='/static/uploads/{{ session.uploaded_image }}';">
+        {% endif %}
+    </div>
+    
+    <div class="result-box">
+        <h2>Hasil Proses</h2>
+        
+        {% if session.get('uploaded_image') %}
+        <form method="POST" action="{{ url_for('process') }}">
+            <div class="filter-options">
+                <label>Pilih Filter:</label>
+                <select name="filter" id="filterSelect" onchange="updateButtonText()">
+                    <option value="grayscale">Grayscale</option>
+                    <option value="blur">Blur</option>
+                    <option value="sharpen">Sharpen</option>
+                    <option value="edge">Edge Detection</option>
+                    <option value="brightness">Brightness</option>
+                    <option value="contrast">Contrast</option>
+                    <option value="sepia">Sepia</option>
+                    <option value="negative">Negative</option>
+                </select>
+            </div>
+            <button type="submit" class="btn" id="processBtn">Proses dengan Grayscale</button>
+        </form>
+        {% endif %}
+        
+        {% if session.get('processed_image') %}
+        <h3>Gambar Hasil:</h3>
+        <img src="{{ url_for('processed_file', filename=session.processed_image) }}?t={{ range(1, 9999999) | random }}" 
+             class="image-preview" 
+             alt="Gambar Hasil"
+             onerror="this.onerror=null; this.src='/static/processed/{{ session.processed_image }}';">
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Fungsi untuk mengubah teks tombol sesuai filter yang dipilih
+    function updateButtonText() {
+        const filterSelect = document.getElementById('filterSelect');
+        const processBtn = document.getElementById('processBtn');
+        
+        if (!filterSelect || !processBtn) return;
+        
+        const selectedFilter = filterSelect.value;
+        
+        // Mapping nama filter ke teks yang lebih friendly
+        const filterNames = {
+            'grayscale': 'Grayscale',
+            'blur': 'Blur',
+            'sharpen': 'Sharpen',
+            'edge': 'Edge Detection',
+            'brightness': 'Brightness',
+            'contrast': 'Contrast',
+            'sepia': 'Sepia',
+            'negative': 'Negative'
+        };
+        
+        // Update teks tombol
+        processBtn.textContent = `Proses dengan ${filterNames[selectedFilter]}`;
+    }
+
+    // Auto-hide flash messages after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(function() {
+                alert.remove();
+            }, 500);
+        });
+    }, 5000);
+</script>
+{% endblock %}

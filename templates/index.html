@@ -1,0 +1,43 @@
+
+{% extends "base.html" %}
+
+{% block title %}Selamat Datang{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-box {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .welcome-box h1 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+    }
+    
+    .welcome-box p {
+        color: #ffffff;
+        margin-bottom: 30px;
+        font-size: 1.1em;
+    }
+    
+    .form-box {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-box">
+    <h1>Aplikasi Pengolahan Citra</h1>
+    <p>Sebelum melanjutkan, masukkan nama Anda</p>
+    
+    <div class="form-box">
+        <form method="POST" action="{{ url_for('set_name') }}">
+            <input type="text" name="username" placeholder="Masukkan nama Anda" required>
+            <button type="submit" class="btn">Lanjut</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
